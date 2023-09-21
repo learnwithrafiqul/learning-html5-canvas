@@ -20,6 +20,7 @@ const boxes = [
     x: 150,
     y: 250,
     color: "red",
+    text: "",
   },
   {
     id: "box-3",
@@ -28,6 +29,7 @@ const boxes = [
     x: 180,
     y: 230,
     color: "green",
+    text: "",
   },
   {
     id: "box-4",
@@ -36,6 +38,7 @@ const boxes = [
     x: 300,
     y: 300,
     color: "yellow",
+    text: "",
   },
 ];
 
@@ -63,12 +66,18 @@ const drowBox = () => {
     if (index === 0) {
       ctx.beginPath();
       ctx.moveTo(box.x + box.width / 2, box.y + box.height / 2);
-      ctx.fillText(box.id, box.x + box.width / 2, box.y + box.height / 2);
+      ctx.font = "20px Georgia";
+      ctx.font = "30px Verdana";
+      ctx.fillText(box.id, box.x + box.width / 4, box.y + box.height / 4);
+      ctx.fillText(box.text, box.x + box.width / 4, box.y + box.height / 4);
       ctx.fillStyle = "black";
     } else {
       ctx.lineTo(box.x + box.width / 2, box.y + box.height / 2);
       ctx.moveTo(box.x + box.width / 2, box.y + box.height / 2);
-      ctx.fillText(box.id, box.x + box.width / 2, box.y + box.height / 2);
+      ctx.font = "20px Georgia";
+      ctx.font = "30px Verdana";
+      ctx.fillText(box.id, box.x + box.width / 4, box.y + box.height / 4);
+      ctx.fillText(box.text, box.x + box.width / 4, box.y + box.height / 4);
       ctx.fillStyle = "black";
     }
   }
@@ -142,19 +151,10 @@ canvas.addEventListener("dblclick", function (event) {
       input.style.left = box.x + "px";
       input.style.width = box.width + "px";
       input.style.height = box.height + "px";
-      input.style.border = "none";
-      input.style.outline = "none";
       input.style.textAlign = "center";
       input.style.background = box.color;
-      input.style.color = "white";
-      input.style.fontSize = "20px";
-      input.style.fontWeight = "bold";
-      input.style.fontFamily = "Arial";
-      input.style.padding = "0";
-      input.style.margin = "0";
-      input.style.boxSizing = "border-box";
-      input.style.zIndex = "100";
-      input.value = box.id;
+      input.style.color = "black";
+      input.value = box.text;
       input.addEventListener("blur", function () {
         box.id = input.value;
         document.body.removeChild(input);
@@ -162,7 +162,7 @@ canvas.addEventListener("dblclick", function (event) {
       });
       input.addEventListener("keydown", function (event) {
         if (event.key === "Enter") {
-          box.id = input.value;
+          box.text = input.value;
           document.body.removeChild(input);
           requestAnimationFrame(drowBox);
         }
