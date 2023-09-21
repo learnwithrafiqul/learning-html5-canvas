@@ -10,14 +10,15 @@ const boxes = [
     height: 100,
     x: 0,
     y: 0,
-    color: "blue",
+    color: "gray",
+    text: "",
   },
   {
     id: "box-2",
     width: 100,
     height: 100,
-    x: 120,
-    y: 200,
+    x: 150,
+    y: 250,
     color: "red",
   },
   {
@@ -62,8 +63,13 @@ const drowBox = () => {
     if (index === 0) {
       ctx.beginPath();
       ctx.moveTo(box.x + box.width / 2, box.y + box.height / 2);
+      ctx.fillText(box.id, box.x + box.width / 2, box.y + box.height / 2);
+      ctx.fillStyle = "black";
     } else {
       ctx.lineTo(box.x + box.width / 2, box.y + box.height / 2);
+      ctx.moveTo(box.x + box.width / 2, box.y + box.height / 2);
+      ctx.fillText(box.id, box.x + box.width / 2, box.y + box.height / 2);
+      ctx.fillStyle = "black";
     }
   }
   ctx.strokeStyle = "white";
@@ -121,7 +127,6 @@ canvas.addEventListener("dblclick", function (event) {
   mouse.x = event.x;
   mouse.y = event.y;
 
-  // if i click on the box get the box id
   boxes.forEach((box) => {
     if (
       mouse.x >= box.x &&
@@ -129,7 +134,41 @@ canvas.addEventListener("dblclick", function (event) {
       mouse.y >= box.y &&
       mouse.y <= box.y + box.height
     ) {
-      box.color = "white";
+      // add input field inside the box
+      const input = document.createElement("input");
+      input.type = "text";
+      input.style.position = "absolute";
+      input.style.top = box.y + "px";
+      input.style.left = box.x + "px";
+      input.style.width = box.width + "px";
+      input.style.height = box.height + "px";
+      input.style.border = "none";
+      input.style.outline = "none";
+      input.style.textAlign = "center";
+      input.style.background = box.color;
+      input.style.color = "white";
+      input.style.fontSize = "20px";
+      input.style.fontWeight = "bold";
+      input.style.fontFamily = "Arial";
+      input.style.padding = "0";
+      input.style.margin = "0";
+      input.style.boxSizing = "border-box";
+      input.style.zIndex = "100";
+      input.value = box.id;
+      input.addEventListener("blur", function () {
+        box.id = input.value;
+        document.body.removeChild(input);
+        requestAnimationFrame(drowBox);
+      });
+      input.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+          box.id = input.value;
+          document.body.removeChild(input);
+          requestAnimationFrame(drowBox);
+        }
+      });
+      document.body.appendChild(input);
+
       requestAnimationFrame(drowBox);
     }
   });
