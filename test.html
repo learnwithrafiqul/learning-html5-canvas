@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Double-Click to Add Text to Canvas</title>
+</head>
+<body>
+    <canvas id="myCanvas" width="400" height="400" style="border:1px solid #000;"></canvas>
+
+    <script>
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+        var rect = { x: 50, y: 50, width: 200, height: 100 }; // Rectangle dimensions
+        var isEditing = false; // Flag to track if text editing is active
+        var editText = ""; // Text to edit
+
+        // Function to draw the rectangle
+        function drawRect() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeRect(rect.x, rect.y, rect.width, rect.height);
+            if (isEditing) {
+                ctx.font = "16px Arial";
+                ctx.fillText(editText, rect.x + 10, rect.y + 30);
+            }
+        }
+
+        // Function to handle double-click event
+        canvas.addEventListener("dblclick", function(event) {
+            var mouseX = event.clientX - canvas.getBoundingClientRect().left;
+            var mouseY = event.clientY - canvas.getBoundingClientRect().top;
+
+            // Check if the double-click occurred inside the rectangle
+            if (
+                mouseX >= rect.x &&
+                mouseX <= rect.x + rect.width &&
+                mouseY >= rect.y &&
+                mouseY <= rect.y + rect.height
+            ) {
+                isEditing = true;
+                editText = ""; // Clear any previous text
+                drawRect();
+                // Create a text input field for editing
+                var input = document.createElement("input");
+                input.type = "text";
+                input.value = editText;
+                input.style.position = "absolute";
+                input.style.left = canvas.getBoundingClientRect().left + rect.x + 10 + "px";
+                input.style.top = canvas.getBoundingClientRect().top + rect.y + 30 + "px";
+                input.addEventListener("blur", function() {
+                    isEditing = false;
+                    editText = input.value;
+                    drawRect();
+                    document.body.removeChild(input);
+                });
+                document.body.appendChild(input);
+                input.focus();
+            }
+        });
+
+        // Initial drawing
+        drawRect();
+    </script>
+</body>
+</html>
