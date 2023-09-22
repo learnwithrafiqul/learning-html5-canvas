@@ -3,7 +3,7 @@ const express = require("express");
 const app = express();
 app.use(express.static("public"));
 
-const expressWs = require("express-ws")(app);
+require("express-ws")(app);
 
 let connections = [];
 
@@ -15,6 +15,9 @@ app.ws("/", (ws, req) => {
   connections.push(ws);
   ws.on("message", (message) => {
     connections.forEach((c) => c.send(message));
+  });
+  ws.on("close", () => {
+    connections = connections.filter((c) => c !== ws);
   });
 });
 

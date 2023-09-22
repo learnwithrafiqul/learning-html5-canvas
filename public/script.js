@@ -3,12 +3,13 @@ let ws = new WebSocket("ws://localhost:8080");
 const canvas = document.getElementById("myCanvas");
 
 const ctx = canvas.getContext("2d");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
+canvas.width = window.innerWidth - canvas.offsetLeft;
+canvas.height = window.innerHeight - canvas.offsetTop;
+const canvasOffsetX = canvas.offsetLeft;
+const canvasOffsetY = canvas.offsetTop;
 window.addEventListener("resize", function () {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  canvas.width = window.innerWidth - canvas.offsetLeft;
+  canvas.height = window.innerHeight - canvas.offsetTop;
 });
 
 const mouse = {
@@ -17,7 +18,7 @@ const mouse = {
 };
 
 let brashColor = "black";
-let brashSize = 10;
+let brashSize = 5;
 let isPressed = false;
 
 canvas.addEventListener("mousedown", function (e) {
@@ -26,43 +27,48 @@ canvas.addEventListener("mousedown", function (e) {
 
 canvas.addEventListener("mouseup", function (e) {
   isPressed = false;
+  ctx.stroke();
+  ctx.beginPath();
 });
 
-let brashDrowRecrod = [];
+const draw = (x, y, size, color) => {
+  ctx.lineWidth = size;
+  ctx.lineCap = "round";
+  ctx.lineTo(x, y);
+  ctx.strokeStyle = color;
+  ctx.stroke();
+};
 
-canvas.addEventListener("mousemove", function (e) {
-  mouse.x = e.x;
-  mouse.y = e.y;
+canvas.addEventListener("mousemove", (e) => {
+  // draw(e.clientX - canvasOffsetX, e.clientY - canvasOffsetY);
+
   if (isPressed) {
-    brashDrowRecrod.push({
-      x: mouse.x,
-      y: mouse.y,
-      color: brashColor,
-      size: brashSize,
-    });
-    // drawCircle(mouse.x, mouse.y, brashSize, brashColor);
-
     ws.send(
       JSON.stringify({
-        x: mouse.x,
-        y: mouse.y,
-        color: brashColor,
+        x: e.clientX - canvasOffsetX,
+        y: e.clientY - canvasOffsetY,
         size: brashSize,
+        color: brashColor,
       })
     );
   }
+
+
+
+  // if mouse is move dro a box top of mouse cursor
+
+  // ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // ctx.arc(e.x, e.y, 20, 0, Math.PI * 10);
+  // ctx.fillStyle = brashColor;
+  // ctx.fill();
+  // ctx.beginPath();
 });
 
 ws.onmessage = (message) => {
   const data = JSON.parse(message.data);
-  console.log("data--->", data);
-  drawCircle(data.x, data.y, data.size, data.color);
+  console.log({ data });
+  draw(data.x, data.y, data.size, data.color);
 };
 
-const drawCircle = (x, y, size, color) => {
-  ctx.beginPath();
-  ctx.arc(x, y, size, 0, Math.PI * 2);
-  ctx.fillStyle = color;
-  ctx.fill();
-  requestAnimationFrame(drawCircle);
-};
+
+
